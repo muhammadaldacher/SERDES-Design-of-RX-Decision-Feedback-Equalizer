@@ -1,0 +1,36 @@
+// VerilogA for clocked_comp, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module clocked_comp(dout,vneg,vpos,clk);
+
+parameter real clk_th=0.6;
+parameter real delay = 10p;
+parameter real ttime = 1p;
+
+input vpos,vneg,clk;
+output dout;
+
+electrical dout,vpos,vneg,clk;
+real d_result;
+
+analog begin
+
+	@(cross(V(clk) - clk_th, +1)) begin
+		if(V(vpos) > V(vneg)) begin
+			d_result = 1.2;
+		end
+		else begin
+			d_result = 0;
+		end
+	end
+
+//	@(cross(V(clk) - clk_th, -1)) begin
+//		d_result = 0;
+//	end	
+
+	V(dout) <+ transition(d_result,delay,ttime);		
+end
+
+endmodule
